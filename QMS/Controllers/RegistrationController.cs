@@ -27,12 +27,63 @@ namespace QMS.Controllers
         {
             this._Registration = new Repository<Registration>();
         }
+        public ActionResult CreateUser()
+        {
+            return View();
+
+        }
+        
+        [HttpPost]
+        public ActionResult CreateUser(string UserMobile, string UserPass, string Name, string Gender)
+        {
+            Registration reg = new Registration();
+            reg.UserMobile = UserMobile;
+            reg.ResetPassword = UserPass;
+            reg.UserPass = CreatePasswordHash(UserPass, SaltKey);
+            reg.Name = Name;
+            reg.Gender = Gender;
+            //reg.RoleID = RoleID;
+            //reg.CounterID = CounterID;
+            reg.CreatedAt = System.DateTime.Now;
+            if (!string.IsNullOrEmpty(UserMobile)  && !string.IsNullOrEmpty(UserPass)  && !string.IsNullOrEmpty(Gender) && !string.IsNullOrEmpty(Name) /*&& !string.IsNullOrEmpty(RoleID) && !string.IsNullOrEmpty(CounterID)*/)
+            {
+                _Registration.Add(reg);
+                _Registration.Save();
+                Session["UserDetails"] = reg;
+
+                UpdateLogger(reg.UserId, "Created new   by mobileno- " + UserMobile.ToString());
+                RefreshUser();
+                return RedirectToAction("CreateUser");
+            }
+            return PartialView("CreateUser");
+        }
+        [HttpGet]
+        public ActionResult GetByID(int ID)
+        {
+            Registration tblreg = _Registration.Find(ID);
+            _Registration.Save();
+            return PartialView("CreateUser");
+        }
+
+        //AdminLogin
+        public ActionResult AdminLogin()
+        {
+            var admin = _Registration.SelectAll().Where(x => x.RoleID==0).ToList();
+            Session["PID"] = null;
+            if (GetUser() != null)
+            {
+                return View();
+            }
+                return View();
+        }
         #region Login
         public ActionResult Login()
         {
             try
             {
-                var user = _Registration.SelectAll().ToList();
+
+               
+                var user = _Registration.SelectAll().Where(x => x.UserId == 1).ToList();
                 Session["PID"] = null;
                 if (GetUser() != null)
                 {
@@ -45,6 +96,7 @@ namespace QMS.Controllers
 
             }
             return View();
+
         }
         [HttpPost]
         public JsonResult Login(string UserMobile, string UserPass)
@@ -54,6 +106,7 @@ namespace QMS.Controllers
                 UpdateLogger(0, "Try to login by mobileno- " + UserMobile.ToString());
                 var VarPass = CreatePasswordHash(UserPass, SaltKey);
                 Registration reg = _Registration.SelectAll().Where(x => x.UserMobile == UserMobile && x.UserPass == VarPass).FirstOrDefault();
+
                 if (reg == null)
                 {
                     return Json("This Mobile No and Password not match, Please try again");
@@ -61,6 +114,21 @@ namespace QMS.Controllers
                 Session["UserDetails"] = reg;
                 //Session["UserName"] = reg.Name;
                 RefreshUser();
+                //trial
+
+
+                if (reg.RoleID == 2)
+                {
+                    return Json("Success^" + Url.Action("CounterReport", "Admin"));
+                }
+                //if (reg.RoleID == 1)
+                //{
+                //    return Json("Success^" + Url.Action("CounterReport", "Admin"));
+                //}
+                //  if (reg.UserId == 3)
+                //  {
+                //    return Json("Success^" + Url.Action("Counter2Report", "Admin"));
+                //}
                 if (reg.RoleID == 0)
                 {
                     return Json("Success^" + Url.Action("UserPanel", "Admin"));
@@ -69,6 +137,11 @@ namespace QMS.Controllers
                 {
                     return Json("Success^" + Url.Action("UserPanel", "Registration"));
                 }
+                //trial
+                //if (reg.UserId == 1)
+                //{
+                //    return Json("Success^" + Url.Action("UserPanel", "Admin"));
+                //}
                 // return Json("Success^"+Url.Action("UserPanel", "Registration"));
             }
             catch (Exception ex)
@@ -79,7 +152,7 @@ namespace QMS.Controllers
             }
         }
         [HttpPost]
-        public JsonResult Sinup(string UserMobile, string UserPass, string Name, string Gender, string DOB, string ReferralCode)
+        public JsonResult Sinup(string UserMobile, string UserPass, string Name, string Gender, string ReferralCode)
         {
             try
             {
@@ -87,21 +160,20 @@ namespace QMS.Controllers
                 {
                     return Json("This Mobile No. Already Exists, Pleasse try another mobile No");
                 }
-               
+
                 Registration reg = new Registration();
                 reg.UserMobile = UserMobile;
                 reg.ResetPassword = UserPass;
                 reg.UserPass = CreatePasswordHash(UserPass, SaltKey);
                 reg.Name = Name;
                 reg.Gender = Gender;
-                reg.DOB = DOB;
+                //reg.DOB = DOB;
                 reg.CreatedAt = System.DateTime.Now;
                 _Registration.Add(reg);
                 _Registration.Save();
                 Session["UserDetails"] = reg;
-                // Session["UserName"] = reg.Name;
-                UpdateLogger(reg.UserId, "Created new sinup by mobileno- " + UserMobile.ToString());
                 
+                UpdateLogger(reg.UserId, "Created new   by mobileno- " + UserMobile.ToString());
                 RefreshUser();
                 // return Json("Success^" + Url.Action("UserPanel", "Registration"));
                 return Json("Success^/Dashboard");
@@ -114,6 +186,7 @@ namespace QMS.Controllers
             }
         }
 
+        
         public ActionResult Logout()
         {
             Session.Abandon();
@@ -188,13 +261,13 @@ namespace QMS.Controllers
             }
 
         }
-        public JsonResult UpdateProfile(string Name,string Dob,string Email,string Gender)
+        public JsonResult UpdateProfile(string Name, string Dob, string Email, string Gender)
         {
             if (GetUser() != null)
             {
                 Registration RegData = _Registration.SelectAll().Where(x => x.UserId == _userIdentity.UserId).FirstOrDefault();
                 RegData.Name = Name;
-                RegData.DOB = Dob;
+                //RegData.DOB = Dob;
                 RegData.Email = Email == null ? "" : Email;
                 RegData.Gender = Gender;
                 _Registration.Save();
@@ -204,7 +277,7 @@ namespace QMS.Controllers
             {
                 return Json("Login");
             }
-            
+
         }
         #endregion
         public ActionResult UserPanel()
@@ -233,7 +306,8 @@ namespace QMS.Controllers
             return hashedPwd;
 
         }
-
+       
+       
         #endregion
 
         #region Password Encyption
@@ -317,4 +391,5 @@ namespace QMS.Controllers
         // string decode = base64Decode(val);
         #endregion
     }
+
 }

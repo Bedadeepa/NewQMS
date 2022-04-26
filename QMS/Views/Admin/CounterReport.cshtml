@@ -1,0 +1,164 @@
+﻿
+@{
+    var p = ViewData["TokenData"] as List<Domain.TokenRegistration>;
+
+    ViewBag.Title = "Home Page";
+}
+@*<h2 class="version-one">Counter 1</h2>*@
+
+
+
+
+
+<div class="container my-4">
+    <hr>
+    <!--Grid row-->
+    <div class="row"style="display: inline;">
+
+        <!--Grid column-->
+        <div class="col-md-12 col-xs-12"style="display: inline;">
+
+            @foreach (var item in p)
+            {
+               
+                <div class="row" style="margin-top: 10px; ">
+                    <div onclick="getTokenData(@item.Id)" id="@item.Id" class="col-md-2 col-xs-6 Qpaper" style="text-align: center;">
+                        <div class="form-group">
+                            <div id="container">
+                                <div class="box" id="hide-div">
+                                    <div>
+                                        <span style="color: white"> @item.Name </span><br />
+                                        <span style="color: white"> @item.TokenNumber </span>
+                                    </div>
+
+                                </div>
+
+                            </div>
+
+                        </div>
+
+                    </div>
+                    <hr/>
+
+                </div>
+              
+            }
+
+     <hr/>   </div>
+    </div>
+    
+</div>
+
+
+ 
+
+
+        <style>
+
+            element.style {
+                text-align: center;
+            }
+
+            .modal-dialog {
+                right: auto;
+                /*left: 50%;*/
+                width: 20%;
+                padding-top: 30px;
+                padding-bottom: 30px;
+            }
+
+            .btn:hover {
+                background-color: black;
+            }
+
+            .Qpaper {
+                cursor: pointer;
+            }
+
+                .Qpaper:hover {
+                    box-shadow: 0 8px 12px 0 rgba(0,0,0,0.2);
+                }
+
+            @@media (max-width: 700px) {
+                .modal-dialog {
+                    /*max-width: 720px;*/
+                    width: 100%;
+                }
+            }
+
+           
+            .row {
+                display: inline-block;
+                font-size: 20px;
+                padding: 20px;
+            }
+            #container {
+                width: 60%;
+                height: 100%;
+                background: #e6e6e6;
+                /* --- FLEX --- */
+               
+                justify-content: center;
+                align-items: center;
+            }
+
+            .box {
+                
+                width: 100px;
+                
+                font-size: 20px;
+                background: green;
+                color: white;
+                text-align: center;
+                box-shadow: 0px 2px 5px #666;
+                border-radius: 3px;
+                column-gap: 2em;
+                justify-content: inherit;
+                transition: all 0.5s ease;
+            }
+
+                .box:hover {
+                    box-shadow: 0px 5px 20px #333;
+                    cursor: pointer;
+                    transform: scale(1.5);
+                }
+        </style>
+        <script>
+            //function setLocation(loc) {
+            //    document.getElementById('hide-div').style.display = 'none';
+            //    window.location = loc;
+            //}
+
+            function select(el) {
+                el.classList.toggle("boxselected");
+                //el.IsActive.toggle("false") ;
+               
+
+            }
+            function getTokenData(id) {
+                 $.ajax({
+
+            type: 'POST',
+            url: '@Url.Action("TokenDetailsupdate", "Admin")',
+            data: {
+                tokenId: id
+
+            },
+            success: function (response) {
+                $('#' + id).hide();
+            },
+            error: function (response) {
+
+            }
+        });
+            }
+        </script>
+        <style>
+            .box {
+                background-color: green;
+            }
+
+            .boxselected {
+                background-color: red;
+            }
+        </style>

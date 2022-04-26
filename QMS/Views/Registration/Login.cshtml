@@ -111,9 +111,9 @@
                                     <div class="form-group">
                                         @Html.DropDownList("Gender", new SelectList(GenderList, "Value", "Text"), new { @class = "form-control" })
                                     </div>
-                                    <div class="form-group">
+                                    @*<div class="form-group">
                                         <input class="form-control" id="DOB" maxlength="10" type="text">
-                                    </div>
+                                    </div>*@
                                     <div class="form-group">
                                         <button type="submit" onclick="UserSinup()" class="btn btn-success">Sign Up </button>
                                     </div>
@@ -193,11 +193,11 @@
             document.getElementById('Name').focus();
             return false;
         }
-        if (stripBlanks(document.getElementById('DOB').value) == "" || !validateDate(document.getElementById('DOB').value)) {
-            fValidation('DOB', 'Please  Enter Date of Birth in [DD/MM/YYYY] Format');
-            document.getElementById('DOB').focus();
-            return false;
-        }
+        //if (stripBlanks(document.getElementById('DOB').value) == "" || !validateDate(document.getElementById('DOB').value)) {
+        //    fValidation('DOB', 'Please  Enter Date of Birth in [DD/MM/YYYY] Format');
+        //    document.getElementById('DOB').focus();
+        //    return false;
+        //}
 
 
 
@@ -206,7 +206,7 @@
             type: 'POST',
             url: '@Url.Action("Sinup", "Registration")',
             data: {
-                UserMobile: $('#SUserMobile').val(), UserPass: $('#SUserPass').val(), Name: $('#Name').val(), Gender: $('#Gender').val(), DOB: $('#DOB').val(),
+                UserMobile: $('#SUserMobile').val(), UserPass: $('#SUserPass').val(), Name: $('#Name').val(), Gender: $('#Gender').val(), 
                 ReferralCode: $('#referralcode').val()
             },
             success: function (response) {

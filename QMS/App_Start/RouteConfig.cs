@@ -19,17 +19,31 @@ namespace QMS
            defaults: new { controller = "Registration", action = "Login", id = UrlParameter.Optional }
            );
             routes.MapRoute(
-           name: "Logout",
+           name: "CounterReport",
+           url: "CounterReport",
+           defaults: new { controller = "Admin", action = "CounterReport", id = UrlParameter.Optional }
+           );
+            routes.MapRoute(
+           name: "Counter2Report",
+           url: "Counter2Report",
+           defaults: new { controller = "Admin", action = "Counter2Report", id = UrlParameter.Optional }
+           );
+            routes.MapRoute(
+           name: "",
            url: "Logout",
            defaults: new { controller = "Registration", action = "Logout", id = UrlParameter.Optional }
            );
-            
 
             routes.MapRoute(
           name: "Dashboard",
           url: "Dashboard",
           defaults: new { controller = "Admin", action = "UserPanel", id = UrlParameter.Optional }
           );
+            routes.MapRoute(
+         name: "CreateUser",
+         url: "CreateUser",
+         defaults: new { controller = "Registration", action = "CreateUser", id = UrlParameter.Optional }
+         );
             routes.MapRoute(
                name: "Default",
                url: "{controller}/{action}/{id}",

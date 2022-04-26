@@ -21,6 +21,7 @@ namespace QMS.Controllers
             this._CounterMaster = new Repository<CounterMaster>();
 
         }
+
         // GET: Admin
         public ActionResult UserPanel()
         {
@@ -62,6 +63,7 @@ namespace QMS.Controllers
                 reg.Mobile = model.Mobile;
                 reg.Payment = model.Payment;
                 reg.Age = model.Age;
+                reg.IsActive = true;
                 _TokenRegistration.Add(reg);
                 _TokenRegistration.Save();
                 return Json("Successfully Updated^"+reg.TokenNumber.ToString());
@@ -70,6 +72,14 @@ namespace QMS.Controllers
             
             return View();
 
+        }
+        [HttpPost]
+        public ActionResult TokenDetailsupdate( int tokenId)
+        {
+            TokenRegistration reg = _TokenRegistration.SelectAll().Where(x => x.Id == tokenId).FirstOrDefault();
+            reg.IsActive = false;
+            _TokenRegistration.Save();
+            return null;
         }
         public  string GetTokenNo(int CounterID)
         {
@@ -92,6 +102,42 @@ namespace QMS.Controllers
 
         }
         
+        public ActionResult CounterReport ()
+        {
+            var reg = Session["UserDetails"] as Registration;
+                ViewData["TokenData"] = _TokenRegistration.SelectAll().Where(x => x.IsActive == true && x.CounterNumberID == reg.CounterID).ToList();
+            
+            return View();
+         
+        }
+        public ActionResult Counter2Report()
+        {
+            ViewData["Counter2TokenData"] = _TokenRegistration.SelectAll().Where(x => x.IsActive == true && x.CounterNumberID ==2 ).ToList();
+
+            return View();
+        }
+        //[HttpPost]
+        //public ActionResult CounterReport(int UserId)
+        //{
+
+        //    if(UserId == 1)
+        //    { ViewData["TokenData"] = _TokenRegistration.SelectAll().Where(x => x.IsActive == true && x.CounterNumberID == 1).ToList();
+        //    }
+        //    if(UserId == 2)
+        //    {
+        //        ViewData["TokenData"] = _TokenRegistration.SelectAll().Where(x => x.IsActive == true && x.CounterNumberID == 2).ToList();
+        //    }
+        //    if (UserId == 3)
+        //    {
+        //        ViewData["TokenData"] = _TokenRegistration.SelectAll().Where(x => x.IsActive == true && x.CounterNumberID == 3).ToList();
+        //    }
+        //    if (UserId == 4)
+        //    {
+        //        ViewData["TokenData"] = _TokenRegistration.SelectAll().Where(x => x.IsActive == true && x.CounterNumberID == 4).ToList();
+        //    }
+
+        //    return View();
+        //}
         //private static int CalculateAge(DateTime dateOfBirth)
         //{
         //    int age = 0;

@@ -2,12 +2,23 @@
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using System.Data.SqlTypes;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
 namespace Domain
 {
+    public class CommonUtility
+    {
+        public static string FormatedDateString(DateTime dateTime)
+        {
+            if (dateTime == SqlDateTime.MinValue.Value)
+                return string.Empty;
+            else
+                return dateTime.ToString("dd/MM/yyyy ");
+        }
+    }
     [Table("Registration")]
     public class Registration
     {
@@ -25,6 +36,7 @@ namespace Domain
         public DateTime CreatedAt { get; set; }
         public int RoleID { get; set; }
         public bool IsActive { get; set; }
+        public int? CounterID { get; set; }
     }
     [Table("UserLogger")]
     public class UserLogger
@@ -69,5 +81,10 @@ namespace Domain
         public string TokenNumber { get; set; }
         public string Payment { get; set; }
         public DateTime Date { get; set; }
+        public bool? IsActive { get; set; }
+
+        private class JsonPropertyAttribute : Attribute
+        {
+        }
     }
 }
